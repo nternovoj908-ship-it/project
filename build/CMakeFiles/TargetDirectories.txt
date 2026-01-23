@@ -1,0 +1,3 @@
+/home/neovp/soft/geant4/geant4-v11.4.0/examples/basic/B11/build/CMakeFiles/exampleB1.dir
+/home/neovp/soft/geant4/geant4-v11.4.0/examples/basic/B11/build/CMakeFiles/edit_cache.dir
+/home/neovp/soft/geant4/geant4-v11.4.0/examples/basic/B11/build/CMakeFiles/rebuild_cache.dir
