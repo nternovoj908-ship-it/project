@@ -34,11 +34,13 @@ void MyROOTManager::Initialize()
 void MyROOTManager::FillHist(double x, double y)
 {
     histFile << x << "\t" << y << "\n";
+    histFile.flush();  // <-- Добавлено: сброс буфера
 }
 
 void MyROOTManager::FillTree(double x, double y, double e, double k, double fe)
 {
     treeFile << x << "\t" << y << "\t" << e << "\t" << k << "\t" << fe << "\n";
+    treeFile.flush();  // <-- Добавлено: сброс буфера
 }
 
 void MyROOTManager::SetInversion(int x)

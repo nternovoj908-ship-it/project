@@ -3,16 +3,14 @@
 #include "G4Allocator.hh"
 #include "G4THitsCollection.hh"
 
-
-//default container for hit data
-
+// Определяем allocator (важно!)
+G4ThreadLocal G4Allocator<TimepixHit>* TimepixHitAllocator = 0;
 
 TimepixHit::TimepixHit() : G4VHit()
 { }
 
 TimepixHit::~TimepixHit()
 { }
-
 
 void TimepixHit::Print()
 { }

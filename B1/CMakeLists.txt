@@ -8,7 +8,7 @@ project(B1)
 # Find Geant4 package, activating all available UI and Vis drivers by default
 # See the documentation for a guide on how to enable/disable specific components
 #
-find_package(Geant4 REQUIRED ui_all vis_all)
+find_package(Geant4 REQUIRED)
 
 # No ROOT needed anymore
 

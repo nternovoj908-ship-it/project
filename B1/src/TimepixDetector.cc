@@ -49,6 +49,10 @@ TimepixDetector::~TimepixDetector()
 
 G4bool TimepixDetector::ProcessHits(G4Step* step, G4TouchableHistory* hist)
 { 
+	// Создаём hit через коллекцию — Geant4 сама управляет памятью
+	auto* HC = THC;
+	if (!HC) return false;
+
 	TimepixHit* hit = new TimepixHit();
 
 	G4StepPoint* point = step->GetPreStepPoint();
@@ -64,9 +68,10 @@ G4bool TimepixDetector::ProcessHits(G4Step* step, G4TouchableHistory* hist)
 	hit -> AddK(kin);
 	hit -> AddFE(fullkin);
 
-	THC -> insert(hit);
+	// Добавляем в коллекцию — Geant4 сама удалит
+	HC -> insert(hit);
 
-	return true;  // <-- Добавлено
+	return true;
 }
 
 void TimepixDetector::Initialize(G4HCofThisEvent* HCE)
@@ -80,9 +85,11 @@ void TimepixDetector::Initialize(G4HCofThisEvent* HCE)
 void TimepixDetector::EndOfEvent(G4HCofThisEvent* HCE)
 { 
 	G4int id = G4SDManager::GetSDMpointer() -> GetCollectionID("Timepix1/TimepixHitCollection");
-	TimepixHitCollection* coll = (TimepixHitCollection*)HCE -> GetHC(id);	
+	auto* coll = (TimepixHitCollection*)HCE -> GetHC(id);	
 
-	G4int number = coll -> entries();  //number of hits in this event
+	G4int number = coll -> entries();
+
+	if (number == 0) return;
 
 	G4double hit_x = 0;
 	G4double hit_y = 0;
@@ -92,7 +99,7 @@ void TimepixDetector::EndOfEvent(G4HCofThisEvent* HCE)
 
 	for (int i = 0; i < number; i++)
 	{
-		TimepixHit* hit = (*coll)[i];
+		auto* hit = (*coll)[i];
 
 		hit_x+= hit -> GetX();
 		hit_y+= hit -> GetY();
@@ -101,19 +108,16 @@ void TimepixDetector::EndOfEvent(G4HCofThisEvent* HCE)
 		fullkin+= hit -> GetFE();	
 	}
 
-	if (number != 0)
-	{
-		energy = energy/keV;
-		
-		hit_x = hit_x/mm/number;
-		hit_y = hit_y/mm/number;
-		kinetic = kinetic/keV/number;
-		fullkin = fullkin/keV/number;
-		
-		if (number != 0){
-			MyROOTManager* RM = MyROOTManager::GetPointer();		
-			RM -> FillHist(hit_x, hit_y);
-			RM -> FillTree(hit_x, hit_y, energy, kinetic, fullkin);
-		}
-	}
+	energy = energy/keV;
+	hit_x = hit_x/mm/number;
+	hit_y = hit_y/mm/number;
+	kinetic = kinetic/keV/number;
+	fullkin = fullkin/keV/number;
+	
+	MyROOTManager* RM = MyROOTManager::GetPointer();		
+	RM -> FillHist(hit_x, hit_y);
+	RM -> FillTree(hit_x, hit_y, energy, kinetic, fullkin);
+
+	// ---> Ручная очистка коллекции после обработки
+	THC->clear();  // <-- Это гарантирует, что все TimepixHit* будут удалены
 }

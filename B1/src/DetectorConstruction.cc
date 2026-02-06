@@ -34,8 +34,9 @@
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Trd.hh"
-#include "G4Tubs.hh" // <-- Добавлено для цилиндрических форм
-#include <cstdio>    // <-- Добавлено для работы с файлом
+#include "G4Tubs.hh"
+#include "G4Sphere.hh" // <-- Добавлено для сферы
+#include <cstdio>
 
 // Добавляем подключения для чувствительного детектора
 #include "TimepixDetector.hh"
@@ -54,7 +55,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // Envelope parameters
   //
   G4double env_sizeXY = 20 * cm, env_sizeZ = 60 * cm;
-  G4Material* env_mat = nist->FindOrBuildMaterial("G4_WATER");
+  G4Material* env_mat = nist->FindOrBuildMaterial("G4_AIR"); // <-- Теперь воздух
 
   // Option to switch on/off checking of volumes overlaps
   //
@@ -108,11 +109,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //
 
   G4Material* collimator_mat = nist->FindOrBuildMaterial("G4_W"); // Вольфрам
-  G4ThreeVector collimator_pos = G4ThreeVector(0, 0, -7 * cm); // Та же Z-координина, что была у Shape1
+  G4ThreeVector collimator_pos = G4ThreeVector(0, 0, 20 * cm); // Та же Z-координина, что была у Shape1
 
   G4double collimator_outer_radius = 2.203869 * cm;
   G4double collimator_inner_radius = 0 * cm;
-  G4double collimator_thickness = 1. * mm;
+  G4double collimator_thickness = 2. * mm;
   G4double collimator_phi1 = 0 * deg;
   G4double collimator_phi2 = 360.0 * deg;
 
@@ -166,7 +167,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4Material* hole_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4double hole_outer_radius = 0.015 * cm;
-  G4double hole_thickness = 1. * mm;
+  G4double hole_thickness = 2. * mm;
   G4double hole_step = 0.036129 * cm;
 
   auto solidHole = new G4Tubs("Hole",
@@ -220,7 +221,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //
 
   G4Material* detector_mat = nist->FindOrBuildMaterial("G4_CADMIUM_TELLURIDE");
-  G4ThreeVector detector_pos = G4ThreeVector(0, 0, 4.4216 * cm); // Позиция нового детектора
+  G4ThreeVector detector_pos = G4ThreeVector(0, 0, 20.4 * cm); // Позиция нового детектора
 
   G4double detector_width = 14.08 * mm;
   G4double detector_thickness = 1 * mm;
@@ -251,6 +252,37 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4SDManager* SDM = G4SDManager::GetSDMpointer();
   SDM->AddNewDetector(timepix);
   logicDetector->SetSensitiveDetector(timepix);
+
+  //
+  // Source visualization volume ("ether") matching point source
+  //
+
+  G4Material* source_vacuum = nist->FindOrBuildMaterial("G4_Galactic"); // "Эфир"
+  G4ThreeVector source_pos = G4ThreeVector(0. * cm, 0, 1.4 * cm); // Позиция как в макросе
+
+  // Маленькая сфера для визуализации точки
+  G4double source_radius = 1.005 * cm; // можно сделать меньше, если нужно
+
+  auto solidSource = new G4Sphere("SourceVolume",
+                                  0, // inner radius
+                                  source_radius, // outer radius
+                                  0 * deg, // phi start
+                                  360. * deg, // phi delta
+                                  0 * deg, // theta start
+                                  180. * deg); // theta delta
+
+  auto logicSource = new G4LogicalVolume(solidSource,
+                                         source_vacuum,
+                                         "LogicSource");
+
+  new G4PVPlacement(nullptr, // no rotation
+                    source_pos,
+                    logicSource,
+                    "PhysSource",
+                    logicEnv, // размещаем внутри "Envelope"
+                    false,
+                    0,
+                    checkOverlaps);
 
   //
   // always return the physical World
