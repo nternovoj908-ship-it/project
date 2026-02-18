@@ -29,7 +29,8 @@ int main()
     std::cout << "Circular source radius: " << source_radius << " (in indices)\n";
 
     // --- Шаг 1: Загрузка маски (динамически определяем размеры) ---
-    std::ifstream mask_file("C:/Users/User/c++1/mask-mura-expanded.txt");
+    //std::ifstream mask_file("C:/Users/User/c++1/mask-mura-expanded.txt");
+    std::ifstream mask_file("./mask-mura-expanded.txt");
     if (!mask_file.is_open()) {
         std::cerr << "Cannot open mask-mura-expanded.txt\n";
         return 1;
@@ -140,7 +141,7 @@ int main()
 
     // --- Шаг 3: Сохранение тенеграммы ---
     // 3.1. Сохранение в .txt
-    std::ofstream tengram_txt_file("C:/Users/User/c++1/generated_circular_tengram.txt");
+    std::ofstream tengram_txt_file("./generated_circular_tengram.txt");
     if (!tengram_txt_file.is_open()) {
         std::cerr << "Cannot open generated_circular_tengram.txt for writing.\n";
         return 1;
@@ -156,7 +157,7 @@ int main()
     std::cout << "Generated tengram saved to generated_circular_tengram.txt\n";
 
     // 3.2. Сохранение в .pgm
-    std::ofstream tengram_pgm_file("C:/Users/User/c++1/generated_circular_tengram.pgm");
+    std::ofstream tengram_pgm_file("./generated_circular_tengram.pgm");
     if (!tengram_pgm_file.is_open()) {
         std::cerr << "Cannot open generated_circular_tengram.pgm for writing.\n";
         return 1;

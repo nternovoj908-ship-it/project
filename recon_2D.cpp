@@ -15,7 +15,7 @@ const double MATCH_THRESHOLD = 0.15; // 80%
 int main()
 {
     // Читаем тенеграмму
-    std::ifstream tengram_file("C:/Users/User/c++1/generated_circular_tengram.txt");
+    std::ifstream tengram_file("./generated_circular_tengram.txt");
     //std::ifstream tengram_file("matrix_output.txt");
     if (!tengram_file.is_open()) {
         std::cerr << "Cannot open matrix_output.txt\n";
@@ -69,7 +69,7 @@ int main()
     }
 
     // Читаем маску mask-mura-expanded.txt
-    std::ifstream mask_file("C:/Users/User/c++1/mask-mura-expanded.txt");
+    std::ifstream mask_file("./mask-mura-expanded.txt");
     //std::ifstream mask_file("C:/Users/User/c++1/expanded_mask.txt");
     //std::ifstream mask_file("../expanded_mask.txt");
     if (!mask_file.is_open()) {
@@ -180,7 +180,7 @@ int main()
 
             // Сохраняем вспомогательную тенеграмму, если это центр
             if (sx == DETECTOR_SIZE_X / 2 && sy == DETECTOR_SIZE_Y / 2 && !center_aux_saved) {
-                std::string filename_txt = "C:/Users/User/c++1/aux_tengram_center.txt";
+                std::string filename_txt = "./aux_tengram_center.txt";
                 std::ofstream aux_out_txt(filename_txt);
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
                     for (int j = 0; j < DETECTOR_SIZE_X; ++j) {
@@ -191,7 +191,7 @@ int main()
                 }
                 aux_out_txt.close();
 
-                std::string filename_pgm = "C:/Users/User/c++1/aux_tengram_center.pgm";
+                std::string filename_pgm = "./aux_tengram_center.pgm";
                 std::ofstream aux_out_pgm(filename_pgm);
                 aux_out_pgm << "P2\n" << DETECTOR_SIZE_X << " " << DETECTOR_SIZE_Y << "\n255\n";
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
@@ -208,7 +208,7 @@ int main()
 
             // Выводим первые 3 вспомогательные тенеграммы
             if (aux_counter < 3) {
-                std::string filename_txt = "C:/Users/User/c++1/aux_tengram_" + std::to_string(aux_counter + 1) + ".txt";
+                std::string filename_txt = "./aux_tengram_" + std::to_string(aux_counter + 1) + ".txt";
                 std::ofstream aux_out_txt(filename_txt);
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
                     for (int j = 0; j < DETECTOR_SIZE_X; ++j) {
@@ -219,7 +219,7 @@ int main()
                 }
                 aux_out_txt.close();
 
-                std::string filename_pgm = "C:/Users/User/c++1/aux_tengram_" + std::to_string(aux_counter + 1) + ".pgm";
+                std::string filename_pgm = "./aux_tengram_" + std::to_string(aux_counter + 1) + ".pgm";
                 std::ofstream aux_out_pgm(filename_pgm);
                 aux_out_pgm << "P2\n" << DETECTOR_SIZE_X << " " << DETECTOR_SIZE_Y << "\n255\n";
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
@@ -278,13 +278,13 @@ int main()
                 // - от 90% совпадений → источник
                 // - от 80% совпадений → минимум 5 совпадений с сигналом
                 // - от 70% совпадений → минимум 7 совпадений с сигналом
-                if (ratio >= 0.99) {
+                if (ratio >= 1.0) {
                     source_reconstruction[sx][sy]++;
                 }
-                else if (ratio >= 0.89 && matches >= 5) {
+                else if (ratio >= 0.99 && matches >= 5) {
                     source_reconstruction[sx][sy]++;
                 }
-                else if (ratio >= 0.89 && matches >= 7) {
+                else if (ratio >= 0.99 && matches >= 7) {
                     source_reconstruction[sx][sy]++;
                 }
             }
@@ -292,7 +292,7 @@ int main()
     }
 
     // Сохраняем результат
-    std::ofstream out("C:/Users/User/c++1/reconstructed_source.txt");
+    std::ofstream out("./reconstructed_source.txt");
     for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
         for (int j = 0; j < DETECTOR_SIZE_X; ++j) {
             out << source_reconstruction[i][j];
@@ -303,7 +303,7 @@ int main()
     out.close();
 
     // Создаём PGM-изображение
-    std::ofstream img("C:/Users/User/c++1/reconstructed_image.pgm");
+    std::ofstream img("./reconstructed_image.pgm");
     img << "P2\n" << DETECTOR_SIZE_X << " " << DETECTOR_SIZE_Y << "\n255\n";
     for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
         for (int j = 0; j < DETECTOR_SIZE_X; ++j) {

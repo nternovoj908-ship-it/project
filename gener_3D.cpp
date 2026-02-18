@@ -197,7 +197,7 @@ int main()
     std::cout << "Base f = " << f_base << ", d = " << d << "\n\n";
 
     // --- Шаг 1: Загрузка маски ---
-    std::ifstream mask_file("C:/Users/User/c++1/mask-mura-expanded.txt");
+    std::ifstream mask_file("./mask-mura-expanded.txt");
     if (!mask_file.is_open()) {
         std::cerr << "Cannot open mask-mura-expanded.txt\n";
         return 1;
@@ -236,9 +236,9 @@ int main()
 
     // === НОВОЕ: Сохранение каждого источника отдельно ===
     std::cout << "Saving individual sources...\n";
-    save_source(source_circle,  "C:/Users/User/c++1/circular_source");
-    save_source(source_square,  "C:/Users/User/c++1/square_source");
-    save_source(source_triangle,"C:/Users/User/c++1/triangle_source");
+    save_source(source_circle,  "./circular_source");
+    save_source(source_square,  "./square_source");
+    save_source(source_triangle,"./triangle_source");
     std::cout << "\n";
     // ================================================
 
@@ -256,9 +256,9 @@ int main()
 
     // --- Шаг 4: Сохранение индивидуальных тенеграмм ---
     std::cout << "Saving individual tengrams...\n";
-    save_tengram(tengram_f,  "C:/Users/User/c++1/tengram_layer1_f");
-    save_tengram(tengram_f1, "C:/Users/User/c++1/tengram_layer2_f+1");
-    save_tengram(tengram_f2, "C:/Users/User/c++1/tengram_layer3_f+2");
+    save_tengram(tengram_f,  "./tengram_layer1_f");
+    save_tengram(tengram_f1, "./tengram_layer2_f+1");
+    save_tengram(tengram_f2, "./tengram_layer3_f+2");
     std::cout << "\n";
 
     // --- Шаг 5: Сохранение комбинированных тенеграмм ---
@@ -266,15 +266,15 @@ int main()
 
     // f + (f+1)
     auto tengram_f_f1 = sum_tengrams(tengram_f, tengram_f1);
-    save_tengram(tengram_f_f1, "C:/Users/User/c++1/tengram_combined_f+f+1");
+    save_tengram(tengram_f_f1, "./tengram_combined_f+f+1");
 
     // f + (f+2)
     auto tengram_f_f2 = sum_tengrams(tengram_f, tengram_f2);
-    save_tengram(tengram_f_f2, "C:/Users/User/c++1/tengram_combined_f+f+2");
+    save_tengram(tengram_f_f2, "./tengram_combined_f+f+2");
 
     // f + (f+1) + (f+2)
     auto tengram_all = sum_tengrams(tengram_f_f1, tengram_f2);
-    save_tengram(tengram_all, "C:/Users/User/c++1/tengram_combined_all");
+    save_tengram(tengram_all, "./tengram_combined_all");
 
     std::cout << "\n=== Program finished successfully ===\n";
     return 0;

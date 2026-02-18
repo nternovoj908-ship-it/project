@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
-
+#include <chrono>
 // Геометрические параметры из DetectorConstruction.cc
 const double f_base = 17.2; // базовое расстояние от источника до коллиматора
 const double d = 4.2;       // расстояние от коллиматора до детектора
@@ -97,7 +97,7 @@ void reconstruct_source(
 
             // Сохраняем вспомогательную тенеграмму, если это центр (только для первого среза)
             if (sx == DETECTOR_SIZE_X / 2 && sy == DETECTOR_SIZE_Y / 2 && !center_aux_saved && output_basename.find("f") != std::string::npos && output_basename.find("+") == std::string::npos) {
-                std::string filename_txt = "C:/Users/User/c++1/aux_tengram_center_f.txt";
+                std::string filename_txt = "./aux_tengram_center_f.txt";
                 std::ofstream aux_out_txt(filename_txt);
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
                     for (int j = 0; j < DETECTOR_SIZE_X; ++j) {
@@ -108,7 +108,7 @@ void reconstruct_source(
                 }
                 aux_out_txt.close();
 
-                std::string filename_pgm = "C:/Users/User/c++1/aux_tengram_center_f.pgm";
+                std::string filename_pgm = "./aux_tengram_center_f.pgm";
                 std::ofstream aux_out_pgm(filename_pgm);
                 aux_out_pgm << "P2\n" << DETECTOR_SIZE_X << " " << DETECTOR_SIZE_Y << "\n255\n";
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
@@ -125,7 +125,7 @@ void reconstruct_source(
 
             // Выводим первые 3 вспомогательные тенеграммы (только для первого среза)
             if (aux_counter < 3 && output_basename.find("f") != std::string::npos && output_basename.find("+") == std::string::npos) {
-                std::string filename_txt = "C:/Users/User/c++1/aux_tengram_" + std::to_string(aux_counter + 1) + "_f.txt";
+                std::string filename_txt = "./aux_tengram_" + std::to_string(aux_counter + 1) + "_f.txt";
                 std::ofstream aux_out_txt(filename_txt);
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
                     for (int j = 0; j < DETECTOR_SIZE_X; ++j) {
@@ -136,7 +136,7 @@ void reconstruct_source(
                 }
                 aux_out_txt.close();
 
-                std::string filename_pgm = "C:/Users/User/c++1/aux_tengram_" + std::to_string(aux_counter + 1) + "_f.pgm";
+                std::string filename_pgm = "./aux_tengram_" + std::to_string(aux_counter + 1) + "_f.pgm";
                 std::ofstream aux_out_pgm(filename_pgm);
                 aux_out_pgm << "P2\n" << DETECTOR_SIZE_X << " " << DETECTOR_SIZE_Y << "\n255\n";
                 for (int i = 0; i < DETECTOR_SIZE_Y; ++i) {
@@ -192,13 +192,13 @@ void reconstruct_source(
             if (total_aux > 0) {
                 double ratio = static_cast<double>(matches) / total_aux;
                 // Новое правило для обозначения источника:
-                if (ratio >= 0.99) {
+                if (ratio >= 1.0) {
                     source_reconstruction[sx][sy]++;
                 }
-                else if (ratio >= 0.89 && matches >= 5) {
+                else if (ratio >= 0.99 && matches >= 50) {
                     source_reconstruction[sx][sy]++;
                 }
-                else if (ratio >= 0.89 && matches >= 7) {
+                else if (ratio >= 0.99 && matches >= 70) {
                     source_reconstruction[sx][sy]++;
                 }
             }
@@ -238,7 +238,7 @@ int main()
     std::cout << "Base f = " << f_base << ", d = " << d << "\n\n";
 
     // --- Читаем тенеграмму (одна для всех срезов) ---
-    std::ifstream tengram_file("C:/Users/User/c++1/generated_circular_tengram.txt");
+    std::ifstream tengram_file("./tengram_combined_all.txt");
     if (!tengram_file.is_open()) {
         std::cerr << "Cannot open generated_circular_tengram.txt\n";
         return 1;
@@ -277,7 +277,7 @@ int main()
     std::cout << "Non-zero elements in real tengram: " << nonzero_count << "\n\n";
 
     // --- Читаем маску (одна для всех срезов) ---
-    std::ifstream mask_file("C:/Users/User/c++1/mask-mura-expanded.txt");
+    std::ifstream mask_file("./mask-mura-expanded.txt");
     if (!mask_file.is_open()) {
         std::cerr << "Cannot open mask-mura-expanded.txt\n";
         return 1;
@@ -304,17 +304,25 @@ int main()
 
     // --- Выполняем реконструкцию для трёх значений f ---
     std::cout << "Starting reconstruction passes...\n\n";
-
+    
+    auto start_time = std::chrono::high_resolution_clock::now();
     // Срез 1: f = f_base
-    reconstruct_source(real_tengram, mask, f_base, "C:/Users/User/c++1/reconstructed_source_f");
+    reconstruct_source(real_tengram, mask, f_base, "./reconstructed_source_f");
     std::cout << "\n";
-
+    
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    
+    std::cout << "\n=== Execution time: " << duration.count() << " ms (" 
+              << duration.count() / 1000.0 << " seconds) ===\n";
+              
+              
     // Срез 2: f = f_base + 1
-    reconstruct_source(real_tengram, mask, f_base + 1, "C:/Users/User/c++1/reconstructed_source_f+1");
+    reconstruct_source(real_tengram, mask, f_base + 1, "./reconstructed_source_f+1");
     std::cout << "\n";
 
     // Срез 3: f = f_base + 2
-    reconstruct_source(real_tengram, mask, f_base + 2, "C:/Users/User/c++1/reconstructed_source_f+2");
+    reconstruct_source(real_tengram, mask, f_base + 2, "./reconstructed_source_f+2");
     std::cout << "\n";
 
     std::cout << "=== All reconstructions completed ===\n";
