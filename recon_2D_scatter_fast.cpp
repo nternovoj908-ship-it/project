@@ -82,7 +82,7 @@ int main()
     }
 
     // Читаем маску mask-mura-expanded.txt
-    std::ifstream mask_file("./mask-mura-expanded.txt");
+    std::ifstream mask_file("./mask-mura-expanded_16.txt");
     //std::ifstream mask_file("C:/Users/User/c++1/expanded_mask.txt");
     //std::ifstream mask_file("../expanded_mask.txt");
     if (!mask_file.is_open()) {
@@ -158,8 +158,8 @@ int main()
                             std::cout << "  sy_centered (source grid) = " << sy_centered << "\n";
 
                             // Формула проекции (без изменений)
-                            double dx_real = (-1)*(sx_centered - (sx_centered - 0.125*mx_centered) * (f + d) / f);
-                            double dy_real = (+1)*(sy_centered - (sy_centered - 0.125*my_centered) * (f + d) / f);
+                            double dx_real = (-1)*(sx_centered - (sx_centered - 0.25*mx_centered) * (f + d) / f);
+                            double dy_real = (+1)*(sy_centered - (sy_centered - 0.25*my_centered) * (f + d) / f);
                             
                             std::cout << "  dx_real = " << dx_real << "\n";
                             std::cout << "  dy_real = " << dy_real << "\n";
@@ -173,8 +173,8 @@ int main()
                         }
 
                         // Единая формула для ВСЕХ источников
-                        double dx_real = (-1)*(sx_centered - (sx_centered - 0.125*mx_centered) * (f + d) / f);
-                        double dy_real = (+1)*(sy_centered - (sy_centered - 0.125*my_centered) * (f + d) / f);
+                        double dx_real = (-1)*(sx_centered - (sx_centered - 0.25*mx_centered) * (f + d) / f);
+                        double dy_real = (+1)*(sy_centered - (sy_centered - 0.25*my_centered) * (f + d) / f);
 
                         // Преобразуем в целые координаты детектора
                         int dx = static_cast<int>(round(dx_real + DETECTOR_SIZE_Y / 2));
